@@ -1,4 +1,5 @@
 import asyncio
+from types import coroutine
 import functools
 
 
@@ -12,7 +13,7 @@ def cond_delegate_to_executor(*attrs):
 
 def _make_cond_delegate_method(attr_name):
     """For spooled temp files, delegate only if rolled to file object"""
-    @asyncio.coroutine
+    @coroutine
     def method(self, *args, **kwargs):
         if self._file._rolled:
             cb = functools.partial(getattr(self._file, attr_name),

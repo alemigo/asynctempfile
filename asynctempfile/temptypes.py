@@ -2,6 +2,8 @@
 
 # Imports
 import asyncio
+from types import coroutine
+
 from aiofiles.base import AsyncBase
 from aiofiles.threadpool.utils import (delegate_to_executor,
                                        proxy_property_directly)
@@ -17,14 +19,14 @@ from functools import partial
 class AsyncSpooledTemporaryFile(AsyncBase):
     """Async wrapper for SpooledTemporaryFile class"""
 
-    @asyncio.coroutine
+    @coroutine
     def _check(self):
         if self._file._rolled: return
         max_size = self._file._max_size
         if max_size and self._file.tell() > max_size:
             yield from self.rollover()
 
-    @asyncio.coroutine
+    @coroutine
     def write(self, s):
         """Implementation to anticipate rollover"""
         if self._file._rolled:
@@ -36,7 +38,7 @@ class AsyncSpooledTemporaryFile(AsyncBase):
             yield from self._check()
             return rv
 
-    @asyncio.coroutine
+    @coroutine
     def writelines(self, iterable):
         """Implementation to anticipate rollover"""
         if self._file._rolled:
@@ -59,6 +61,6 @@ class AsyncTemporaryDirectory:
         self._loop = loop
         self._executor = executor
 
-    @asyncio.coroutine
+    @coroutine
     def close(self):
         yield from self.cleanup()
