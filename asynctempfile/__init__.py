@@ -4,7 +4,7 @@ __version__ = '0.3.0.dev0'
 
 # Imports
 import asyncio
-from types import couroutine
+from types import coroutine
 
 from tempfile import (TemporaryFile as syncTemporaryFile,
                       NamedTemporaryFile as syncNamedTemporaryFile,
