@@ -13,6 +13,10 @@ Non-blocking methods and properties retain a sync interface.  SpooledTemporaryFi
 disk.  New instances of the above classes return wrapped with a context 
 manager allowing use with async with and async for.
 
+### Installation
+
+pip install asynctempfile
+
 ### Credit
 
 An extension of github.com/Tinche/aiofiles 
