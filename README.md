@@ -41,3 +41,9 @@ async with asynctempfile.NamedTemporaryFile('wb+') as f:
 
 aiofiles
 
+### Release Notes
+
+**0.5.0**
+* Adjusted TemporaryDirectory to return its path as opposed to the object when used with a context manager, aligning behaviour with the sync library (thank you to hellocoldworld).
+* Fixed name attribute for TemporaryFile as this property is now included in the aiofiles wrapper.
+

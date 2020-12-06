@@ -1,10 +1,11 @@
 """ Async implementation of the tempfile module"""
 
-__version__ = '0.4.0.dev0'
+__version__ = '0.5.0'
 
 # Imports
 import asyncio
 from types import coroutine
+from collections.abc import Coroutine
 
 from tempfile import (TemporaryFile as syncTemporaryFile,
                       NamedTemporaryFile as syncNamedTemporaryFile,
@@ -63,7 +64,7 @@ def SpooledTemporaryFile(max_size=0, mode='w+b', buffering=-1, encoding=None,
 
 def TemporaryDirectory(loop=None, executor=None):
     """Async open a temporary directory"""
-    return AiofilesContextManager(_temporary_directory(loop=loop,
+    return AiofilesContextManagerTempDir(_temporary_directory(loop=loop,
                                                        executor=executor))
 
 
@@ -94,8 +95,7 @@ def _temporary_file(named=True, mode='w+b', buffering=-1,
     if type(f) is syncTemporaryFileWrapper:
         # _TemporaryFileWrapper was used (named files)
         result = wrap(f.file, f, loop=loop, executor=executor)
-        # add name and delete properties
-        result.name = f.name
+        # add delete property
         result.delete = f.delete
         return result
     else:
@@ -110,10 +110,12 @@ def _spooled_temporary_file(max_size=0, mode='w+b', buffering=-1,
     if loop is None:
         loop = asyncio.get_event_loop()
 
-    f = syncSpooledTemporaryFile(max_size=max_size, mode=mode,
-                                 buffering=buffering, encoding=encoding,
-                                 newline=newline, suffix=suffix,
-                                 prefix=prefix, dir=dir)
+    cb = partial(syncSpooledTemporaryFile, max_size=max_size, mode=mode,
+                 buffering=buffering, encoding=encoding,
+                 newline=newline, suffix=suffix,
+                 prefix=prefix, dir=dir)
+
+    f = yield from loop.run_in_executor(executor, cb)
 
     # Single interface provided by SpooledTemporaryFile for all modes
     return AsyncSpooledTemporaryFile(f, loop=loop, executor=executor)
@@ -128,6 +130,13 @@ def _temporary_directory(loop=None, executor=None):
     f = yield from loop.run_in_executor(executor, syncTemporaryDirectory)
 
     return AsyncTemporaryDirectory(f, loop=loop, executor=executor)
+
+
+class AiofilesContextManagerTempDir(AiofilesContextManager):
+    """With returns the directory location, not the object (matching sync lib)"""
+    async def __aenter__(self):
+        self._obj = await self._coro
+        return self._obj.name
 
 
 @singledispatch
@@ -155,3 +164,5 @@ def _(base_io_obj, file, *, loop=None, executor=None):
 @wrap.register(FileIO)
 def _(base_io_obj, file, *, loop=None, executor=None):
     return AsyncFileIO(file, loop=loop, executor=executor)
+
+

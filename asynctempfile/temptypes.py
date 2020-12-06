@@ -18,13 +18,12 @@ from functools import partial
 @proxy_property_directly('closed', 'encoding', 'mode', 'name', 'softspace')
 class AsyncSpooledTemporaryFile(AsyncBase):
     """Async wrapper for SpooledTemporaryFile class"""
-
     @coroutine
     def _check(self):
         if self._file._rolled: return
         max_size = self._file._max_size
         if max_size and self._file.tell() > max_size:
-            yield from self.rollover()
+            return (yield from self.rollover())
 
     @coroutine
     def write(self, s):
