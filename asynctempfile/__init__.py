@@ -1,11 +1,10 @@
 """ Async implementation of the tempfile module"""
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
 # Imports
 import asyncio
 from types import coroutine
-from collections.abc import Coroutine
 
 from tempfile import (TemporaryFile as syncTemporaryFile,
                       NamedTemporaryFile as syncNamedTemporaryFile,
@@ -164,5 +163,3 @@ def _(base_io_obj, file, *, loop=None, executor=None):
 @wrap.register(FileIO)
 def _(base_io_obj, file, *, loop=None, executor=None):
     return AsyncFileIO(file, loop=loop, executor=executor)
-
-

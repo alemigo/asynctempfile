@@ -23,7 +23,7 @@ class AsyncSpooledTemporaryFile(AsyncBase):
         if self._file._rolled: return
         max_size = self._file._max_size
         if max_size and self._file.tell() > max_size:
-            return (yield from self.rollover())
+            yield from self.rollover()
 
     @coroutine
     def write(self, s):
