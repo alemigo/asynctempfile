@@ -1,7 +1,6 @@
 # asynctempfile
 
-Async interface for the standard tempfile module.  Implements the following 
-4 classes:
+Async interface for the standard tempfile module.  Implements the following 4 interfaces:
 
 - TemporaryFile
 - NamedTemporaryFile
