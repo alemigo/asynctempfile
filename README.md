@@ -1,5 +1,10 @@
 # asynctempfile
 
+### DEPRECATED
+
+**This code has been incorporated into the aiofiles depedency and will no longer be maintained here.  Please see github.com/Tinche/aiofiles 
+***
+
 Async interface for the standard tempfile module.  Implements the following 4 interfaces:
 
 - TemporaryFile
@@ -15,10 +20,6 @@ manager allowing use with async with and async for.
 ### Installation
 
 pip install asynctempfile
-
-### Credit
-
-An extension of github.com/Tinche/aiofiles 
 
 ### Examples
 ```
